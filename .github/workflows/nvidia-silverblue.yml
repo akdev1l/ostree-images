@@ -23,7 +23,9 @@ jobs:
       id: podman_build
       uses: redhat-actions/buildah-build@v2
       with:
-        containerfiles: ./images/fedora-nvsb/Containerfile
+        containerfiles: |
+          images/fedora-nvsb/Containerfile
+        context: images/fedora-nvsb
         image: ${{ env.IMAGE_NAME }}
         tags: ${{ env.IMAGE_TAGS }}
         oci: true
