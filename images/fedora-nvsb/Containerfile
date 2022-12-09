@@ -8,15 +8,20 @@ RUN dnf install -y ${RPMFUSION_FREE} ${RPMFUSION_NON_FREE} fedora-repos-archive 
     akmods --force
 
 FROM ghcr.io/cgwalters/fedora-silverblue:37
+
 # See https://pagure.io/releng/issue/11047 for final location
 ENV RPMFUSION_FREE="https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-37.noarch.rpm"
 ENV RPMFUSION_NON_FREE="https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-37.noarch.rpm"
 
+# Copy kmod rpm from previous stage
 COPY --from=0 /var/cache/akmods/nvidia /tmp/nvidia
 
 RUN rpm-ostree install ${RPMFUSION_FREE} ${RPMFUSION_NON_FREE} && \
-    rpm-ostree install xorg-x11-drv-nvidia{,-cuda} kernel
-RUN rpm-ostree install /tmp/nvidia/*$(uname -r)*.rpm
+    rpm-ostree install xorg-x11-drv-nvidia{,-cuda} kernel && \
+    rpm-ostree install /tmp/nvidia/*$(uname -r)*.rpm && \
+    rm -rf /var/* && rm -rf /tmp/nvidia && \
+    ostree container commit
 
-RUN    rm -rf /var/* && rm -rf /tmp/nvidia && ostree container commit
 LABEL org.opencontainers.image.source https://github.com/akdev1l/ostree-images
+LABEL NAME fedora-nvsb
+LABEL VERSION latest
