@@ -11,7 +11,7 @@ main() {
     fi
 
 
-    image_id="$(podman build "${image_builddir}" | tail -1)"
+    image_id="$(podman build --format oci "${image_builddir}" | tail -1)"
     image_tag="${image_name}:latest"
 
     podman tag "${image_id}" "localhost/${image_tag}"
