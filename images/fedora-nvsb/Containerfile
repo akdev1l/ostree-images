@@ -1,4 +1,4 @@
-ARG KERNEL_VERSION="6.0.10-300.fc37.x86_64"
+ARG KERNEL_VERSION="6.0.11-300.fc37.x86_64"
 ARG RPMFUSION_FREE="https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-37.noarch.rpm"
 ARG RPMFUSION_NON_FREE="https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-37.noarch.rpm"
 

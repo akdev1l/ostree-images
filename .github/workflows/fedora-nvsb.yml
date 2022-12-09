@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY_USER: ${{ github.actor }}
   REGISTRY_PASSWORD: ${{ github.token }}
+  IMAGE_TAGS: latest
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
 
 jobs:
@@ -24,4 +25,4 @@ jobs:
         registry: ${{ env.IMAGE_REGISTRY }}
 
     - name: publish ostree-images to container repository
-      run: ./publish-all.sh
+      run: IMAGE_TAGS="${IMAGE_TAGS} $(date '+%Y%m%d')" ./publish-all.sh
