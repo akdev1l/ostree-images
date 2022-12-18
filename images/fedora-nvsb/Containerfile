@@ -35,7 +35,7 @@ RUN KERNEL_VERSION=$(cat /kernel-version.txt) && \
     rpm-ostree install ${RPMFUSION_FREE} ${RPMFUSION_NON_FREE} && \
     rpm-ostree install xorg-x11-drv-nvidia{,-cuda} kernel-${KERNEL_VERSION} && \
     rpm-ostree install /tmp/nvidia/*${KERNEL_VERSION}*.rpm && \
-    rm -rf /var/* && rm -rf /tmp/nvidia && \
+    rm -rf /var/* && rm -rf /tmp/nvidia && rm -f /kernel-version.txt && \
     ostree container commit
 
 LABEL org.opencontainers.image.source https://github.com/akdev1l/ostree-images
