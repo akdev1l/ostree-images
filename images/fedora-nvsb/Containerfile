@@ -1,26 +1,38 @@
-ARG KERNEL_VERSION="6.0.11-300.fc37.x86_64"
 ARG RPMFUSION_FREE="https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-37.noarch.rpm"
 ARG RPMFUSION_NON_FREE="https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-37.noarch.rpm"
 
-FROM fedora:37
-ARG KERNEL_VERSION
+FROM ghcr.io/cgwalters/fedora-silverblue:37 as kernel-query
+
+# Export kernel version to file for use in later stages
+# See https://github.com/coreos/layering-examples/blob/main/build-zfs-module/Containerfile for another example
+RUN rpm -qa kernel --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}' > /kernel-version.txt && \
+    echo "Detected kernel version: $(cat /kernel-version.txt)"
+
+FROM fedora:37 as nvidia-base
 ARG RPMFUSION_FREE
 ARG RPMFUSION_NON_FREE
 
-RUN dnf install -y $RPMFUSION_FREE $RPMFUSION_NON_FREE fedora-repos-archive && \
+# Copy kernel version from kernel-query stage
+COPY --from=kernel-query /kernel-version.txt /kernel-version.txt
+
+RUN KERNEL_VERSION=$(cat /kernel-version.txt) && \
+    dnf install -y $RPMFUSION_FREE $RPMFUSION_NON_FREE fedora-repos-archive && \
     dnf install -y mock xorg-x11-drv-nvidia{,-cuda} binutils kernel-devel-$KERNEL_VERSION kernel-$KERNEL_VERSION && \
     akmods --force
 
 FROM ghcr.io/cgwalters/fedora-silverblue:37
-ARG KERNEL_VERSION
 ARG RPMFUSION_FREE
 ARG RPMFUSION_NON_FREE
 
+# Copy kernel version from kernel-query stage
+COPY --from=kernel-query /kernel-version.txt /kernel-version.txt
+
 # See https://pagure.io/releng/issue/11047 for final location
 # Copy kmod rpm from previous stage
-COPY --from=0 /var/cache/akmods/nvidia /tmp/nvidia
+COPY --from=nvidia-base /var/cache/akmods/nvidia /tmp/nvidia
 
-RUN rpm-ostree install ${RPMFUSION_FREE} ${RPMFUSION_NON_FREE} && \
+RUN KERNEL_VERSION=$(cat /kernel-version.txt) && \
+    rpm-ostree install ${RPMFUSION_FREE} ${RPMFUSION_NON_FREE} && \
     rpm-ostree install xorg-x11-drv-nvidia{,-cuda} kernel-${KERNEL_VERSION} && \
     rpm-ostree install /tmp/nvidia/*${KERNEL_VERSION}*.rpm && \
     rm -rf /var/* && rm -rf /tmp/nvidia && \
