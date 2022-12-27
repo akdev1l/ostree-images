@@ -21,14 +21,34 @@
       - ripgrep
       - fira-code-fonts
       - rclone
-      - fedora-flathub-remote
       - yubikey-manager-qt
       - yubikey-manager
       - ykclient
       - yubioath-desktop
       - keepassxc
 
-- name: truncate fedora-flathub filter
+- name: make sure flatpak installations.d exists
+  file:
+    path: /etc/flatpak/installations.d
+    state: directory
+
+- name: create flatpak extra installation to allow flatpak installation
   copy:
-    dest: /usr/share/flatpak/fedora-flathub.filter
-    content: ""
+    src: flatpak-extra.conf
+    dest: /etc/flatpak/installations.d/extra.conf
+
+- name: install flathub remote in extra installation
+  shell: |
+    flatpak --installation=extra remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+
+- name: install flatpak applications from flathub
+  shell: |
+    flatpak install -y {{item|quote}}
+  loop:
+    - org.mozilla.firefox
+    - com.discordapp.Discord
+    - com.github.wwmm.easyeffects
+    - com.valvesoftware.Steam
+    - com.valvesoftware.Steam.CompatibilityTool.Proton
+    - com.valvesoftware.Steam.CompatibilityTool.Proton-GE
+    - com.valvesoftware.Steam.CompatibilityTool.Proton-Exp
