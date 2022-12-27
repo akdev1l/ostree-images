@@ -1,4 +1,11 @@
 ---
+- name: remove unnecessary packages from base image
+  community.general.rpm_ostree_pkg:
+    state: absent
+    name:
+      - firefox
+      - firefox-langpacks
+
 - name: install packages with rpm-ostree
   community.general.rpm_ostree_pkg:
     state: present
@@ -15,6 +22,11 @@
       - fira-code-fonts
       - rclone
       - fedora-flathub-remote
+      - yubikey-manager-qt
+      - yubikey-manager
+      - ykclient
+      - yubioath-desktop
+      - keepassxc
 
 - name: truncate fedora-flathub filter
   copy:
