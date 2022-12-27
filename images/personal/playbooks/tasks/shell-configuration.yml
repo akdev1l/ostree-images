@@ -1,0 +1,27 @@
+---
+- name: drop in vimrc
+  copy:
+    src: vimrc
+    mode: '0644'
+    dest: "/etc/vimrc.local"
+
+- name: install tmux-themepack
+  git:
+    repo: https://github.com/jimeh/tmux-themepack.git
+    dest: /etc/tmux-themepack
+
+- name: configure tmux
+  copy:
+    src: tmux.conf
+    dest: /etc/tmux.conf
+    mode: '0644'
+
+- name: install oh-my-zsh
+  shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" --unattended
+  environment:
+    ZSH: /etc/oh-my-zsh
+   
+- name: drop custom shell environment
+  copy:
+    src: zshrc
+    dest: /etc/skel/.zshrc
