@@ -1,0 +1,27 @@
+#
+# .zshrc is sourced in interactive shells.
+# It should contain commands to set up aliases,
+# functions, options, key bindings, etc.
+#
+
+autoload -U compinit
+compinit
+
+#allow tab completion in the middle of a word
+setopt COMPLETE_IN_WORD
+
+# Path to your oh-my-zsh installation.
+export ZSH="/etc/oh-my-zsh"
+export ZSH_THEME="gianu"
+export CASE_SENSITIVE="true"
+export DISABLE_MAGIC_FUNCTIONS="true"
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+export MAKEOPTS="-j$(nproc)"
+export EDITOR=vim
+export VISUAL=vim
+export LESS="-r -S"
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+alias ls='ls --color=tty --group-directories-first'
