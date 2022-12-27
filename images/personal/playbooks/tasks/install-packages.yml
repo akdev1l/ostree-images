@@ -1,0 +1,41 @@
+---
+- name: install packages with rpm-ostree
+  community.general.rpm_ostree_pkg:
+    state: present
+    name:
+      - libvirt
+      - virt-manager
+      - qemu-kvm
+      - virt-viewer
+      - zsh
+      - git
+      - tmux
+      - vim
+      - ripgrep
+      - fira-code-fonts
+      - rclone
+
+- name: create remotes.d
+  file:
+    path: /usr/etc/flatpak/remotes.d
+    state: directory
+
+- name: enable flathub remote
+  copy:
+    dest: /usr/etc/flatpak/remotes.d/flathub.conf
+    content: |
+      [core]
+      repo_version=1
+      mode=bare-user-only
+      min-free-space-size=500MB
+
+      [remote "flathub"]
+      url=https://dl.flathub.org/repo/
+      xa.title=Flathub
+      gpg-verify=true
+      gpg-verify-summary=true
+      xa.comment=Central repository of Flatpak applications
+      xa.description=Central repository of Flatpak applications
+      xa.icon=https://dl.flathub.org/repo/logo.svg
+      xa.homepage=https://flathub.org/
+

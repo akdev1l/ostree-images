@@ -1,4 +1,4 @@
-name: build alpine toolbox container images
+name: build silverblue ostree container images
 
 on:
   schedule:
