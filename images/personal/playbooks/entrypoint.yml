@@ -1,0 +1,8 @@
+---
+- name: start base image configuration
+  hosts: localhost
+  tasks:
+    - import_tasks: ./tasks/install-packages.yml
+    - name: start configuration of packages
+      debug:
+        msg: "hello"
