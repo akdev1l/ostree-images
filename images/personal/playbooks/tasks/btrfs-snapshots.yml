@@ -1,0 +1,21 @@
+---
+- name: deploy btrfs-snapshot utility
+  copy:
+    src: btrfs-snapshot
+    dest: /usr/bin/btrfs-snapshot
+    mode: '0755'
+
+- name: deploy btrfs-snapshot service and timer
+  copy:
+    src: "{{item}}"
+    dest: /etc/systemd/system
+    mode: '0644'
+  loop:
+    - btrfs-snapshot@.service
+    - btrfs-snapshot@.timer
+
+- name: enable hourly snapshots for home
+  systemd:
+    name: "btrfs-snapshot@{{item}}.timer"
+    enabled: yes
+  loop: []

@@ -1,0 +1,9 @@
+[Unit]
+Description=Sync home directory hourly with wasabi s3 storage
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

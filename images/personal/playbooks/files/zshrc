@@ -25,3 +25,12 @@ export VISUAL=vim
 export LESS="-r -S"
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 alias ls='ls --color=tty --group-directories-first'
+
+# Containerized utilities for convenience
+aws() {
+    podman run --rm -it \
+        --security-opt label=disable \
+        -v $HOME:$HOME \
+        -v $HOME/.aws:/root/.aws \
+        amazon/aws-cli:latest "$@"
+}

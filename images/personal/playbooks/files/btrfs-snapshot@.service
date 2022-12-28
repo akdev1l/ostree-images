@@ -1,0 +1,5 @@
+[Unit]
+Description= BTRFS Snapshot for %I
+
+[Service]
+ExecStart=/usr/bin/btrfs-snapshot --instance %I

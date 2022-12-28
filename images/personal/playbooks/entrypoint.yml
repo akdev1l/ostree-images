@@ -4,3 +4,5 @@
   tasks:
     - import_tasks: ./tasks/install-packages.yml
     - import_tasks: ./tasks/shell-configuration.yml
+    - import_tasks: ./tasks/btrfs-snapshots.yml
+    - import_tasks: ./tasks/wasabi-sync.yml

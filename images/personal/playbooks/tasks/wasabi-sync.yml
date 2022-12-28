@@ -1,0 +1,14 @@
+---
+- name: deploy wasync binary
+  copy:
+    src: wasync
+    dest: /usr/bin/wasync
+    mode: '0755'
+
+- name: deploy wasync systemd service and timer
+  copy:
+    src: "{{item}}"
+    dest: /etc/systemd/system
+  loop:
+    - wasync.service
+    - wasync.timer
