@@ -5,6 +5,7 @@
     name:
       - firefox
       - firefox-langpacks
+      - toolbox
 
 - name: install packages with rpm-ostree
   community.general.rpm_ostree_pkg:
@@ -21,34 +22,16 @@
       - ripgrep
       - fira-code-fonts
       - rclone
+      - fedora-flathub-remote
       - yubikey-manager-qt
       - yubikey-manager
       - ykclient
       - yubioath-desktop
       - keepassxc
+      - borgbackup
+      - distrobox
 
-- name: make sure flatpak installations.d exists
-  file:
-    path: /etc/flatpak/installations.d
-    state: directory
-
-- name: create flatpak extra installation to allow flatpak installation
+- name: truncate fedora-flathub filter
   copy:
-    src: flatpak-extra.conf
-    dest: /etc/flatpak/installations.d/extra.conf
-
-- name: install flathub remote in extra installation
-  shell: |
-    flatpak --installation=extra remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-
-- name: install flatpak applications from flathub
-  shell: |
-    flatpak install -y {{item|quote}}
-  loop:
-    - org.mozilla.firefox
-    - com.discordapp.Discord
-    - com.github.wwmm.easyeffects
-    - com.valvesoftware.Steam
-    - com.valvesoftware.Steam.CompatibilityTool.Proton
-    - com.valvesoftware.Steam.CompatibilityTool.Proton-GE
-    - com.valvesoftware.Steam.CompatibilityTool.Proton-Exp
+    dest: /usr/share/flatpak/fedora-flathub.filter
+    content: ""

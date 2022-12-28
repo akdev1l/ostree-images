@@ -1,0 +1,5 @@
+[Unit]
+Description=Sync home directory with wasabu S3 storage
+
+[Service]
+ExecStart=/usr/bin/wasync
