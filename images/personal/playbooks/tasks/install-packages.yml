@@ -30,6 +30,7 @@
       - keepassxc
       - borgbackup
       - distrobox
+      - python3-lxml
 
 - name: truncate fedora-flathub filter
   copy:
