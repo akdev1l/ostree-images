@@ -2,6 +2,7 @@
 - name: start base image configuration
   hosts: localhost
   tasks:
+    - import_tasks: ./tasks/auto-updates.yml
     - import_tasks: ./tasks/install-packages.yml
     - import_tasks: ./tasks/shell-configuration.yml
     - import_tasks: ./tasks/btrfs-snapshots.yml
