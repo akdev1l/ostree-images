@@ -1,0 +1,133 @@
+name: build-ostree
+on:
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+  schedule:
+    - cron: '23 20 * * *'  # 11:20pm everyday
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+env:
+    IMAGE_BASE_NAME: ${{ github.repository_owner }}
+    IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}
+
+jobs:
+  push-ghcr:
+    name: Build and push image
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        image_name:
+          - personal
+        major_version:
+          - 38
+        source_image:
+          - quay.io/fedora-ostree-desktops/silverblue
+          - quay.io/fedora-ostree-desktops/kinoite
+    steps: 
+      # Checkout push-to-registry action GitHub repository
+      - name: git checkout
+        uses: actions/checkout@v3
+
+      - name: Get current version
+        id: labels
+        run: |
+          ver=$(skopeo inspect docker://${{ matrix.source_image }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          echo "VERSION=$ver" >> $GITHUB_OUTPUT
+
+      # Build metadata
+      - name: Image Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: ${{ matrix.image_name }}
+          labels: |
+            org.opencontainers.image.title=${{ matrix.image_name }}
+            org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
+            org.opencontainers.image.description=A base ${{ matrix.image_name }} setup for development
+            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/akdev1l/ostree-images/master/README.md
+
+      # Build image using Buildah action
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          containerfiles: |
+            ./Containerfile
+          context: images/${{ matrix.image_name }}
+          image: ${{ matrix.image_name }}
+          tags: |
+            ${{ steps.generate-tags.outputs.alias_tags }}
+          build-args: |
+            IMAGE_NAME=${{ matrix.image_name }}
+            SOURCE_IMAGE=${{ matrix.source_image }}
+            FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
+          labels: ${{ steps.meta.outputs.labels }}
+          oci: true
+
+      # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
+      # https://github.com/macbre/push-to-ghcr/issues/12
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+
+      # Push the image to GHCR (Image Registry)
+      - name: Push To GHCR
+        uses: redhat-actions/push-to-registry@v2
+        id: push
+        if: github.event_name != 'pull_request'
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ steps.registry_case.outputs.lowercase }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: login to GitHub Container Registry
+        uses: redhat-actions/podman-login@v1
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # Sign container
+      - uses: sigstore/cosign-installer@v3.0.1
+        if: github.event_name != 'pull_request'
+
+      - name: sign container image
+        if: github.event_name != 'pull_request'
+        env:
+          TAGS: ${{ steps.push.outputs.digest }}
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
+        run: |
+          umask 077
+          cat > cosign.key <<EOF
+          ${{env.COSIGN_PRIVATE_KEY}}
+          EOF
+          wc -c cosign.key
+          cosign sign -y --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
+
+      - name: echo outputs
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "${{ toJSON(steps.push.outputs) }}"
+
