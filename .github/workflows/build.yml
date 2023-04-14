@@ -33,9 +33,11 @@ jobs:
           - personal
         major_version:
           - 38
-        source_image:
-          - ghcr.io/ublue-os/silverblue-nvidia
-          - ghcr.io/ublue-os/kinoite-nvidia
+        flavor:
+          - source_image: ghcr.io/ublue-os/silverblue-nvidia
+            label: silverblue
+          - source_image: ghcr.io/ublue-os/kinoite-nvidia
+            label: kinoite
     steps: 
       # Checkout push-to-registry action GitHub repository
       - name: git checkout
@@ -44,7 +46,7 @@ jobs:
       - name: Get current version
         id: labels
         run: |
-          ver=$(skopeo inspect docker://${{ matrix.source_image }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+          ver=$(skopeo inspect docker://${{ matrix.flavor.source_image }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
           echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       # Build metadata
@@ -54,9 +56,9 @@ jobs:
         with:
           images: ${{ matrix.image_name }}
           labels: |
-            org.opencontainers.image.title=${{ matrix.image_name }}
+            org.opencontainers.image.title=${{ matrix.image_name }}-${{ matrix.flavor.label }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
-            org.opencontainers.image.description=A base ${{ matrix.image_name }} setup for development
+            org.opencontainers.image.description=OCI OSTree Image ${{ matrix.image_name }} setup for development with ${{ matrix.flavor.label }} as base
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/akdev1l/ostree-images/master/README.md
 
       - name: generate tags
@@ -80,8 +82,8 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
-            IMAGE_NAME=${{ matrix.image_name }}
-            SOURCE_IMAGE=${{ matrix.source_image }}
+            IMAGE_NAME=${{ matrix.image_name }}-${{ matrix.flavor.label }}
+            SOURCE_IMAGE=${{ matrix.flavor.source_image }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: true
@@ -131,7 +133,7 @@ jobs:
           umask 077
           echo "${{ env.COSIGN_PRIVATE_KEY }}" > cosign.key
           wc -c cosign.key
-          cosign sign -y --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}@${TAGS}
+          cosign sign -y --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ matrix.image_name }}-${{matrix.flavor.label}}@${TAGS}
 
       - name: echo outputs
         if: github.event_name != 'pull_request'
