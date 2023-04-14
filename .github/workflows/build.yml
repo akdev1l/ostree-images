@@ -78,7 +78,7 @@ jobs:
           containerfiles: |
             ./images/${{ matrix.image_name }}/Containerfile
           context: images/${{ matrix.image_name }}
-          image: ${{ matrix.image_name }}
+          image: ${{ matrix.image_name }}-${{ matrix.flavor.label }}
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
