@@ -1,4 +1,6 @@
-FROM ghcr.io/akdev1l/ostree-images/fedora-nvsb:latest
+ARG SOURCE_IMAGE
+ARG FEDORA_MAJOR_VERSION
+FROM ${SOURCE_IMAGE}:${FEDORA_MAJOR_VERSION}
 
 COPY playbooks /tmp
 RUN rpm-ostree install -y ansible && \
@@ -6,7 +8,3 @@ RUN rpm-ostree install -y ansible && \
     ansible-playbook /tmp/entrypoint.yml && \
     rm -rf ~/.ansible /var/* ~/.* && \
     ostree container commit
-
-LABEL org.opencontainers.image.source https://github.com/akdev1l/ostree-images
-LABEL NAME personal
-LABEL VERSION latest
