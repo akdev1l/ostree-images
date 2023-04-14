@@ -26,7 +26,6 @@
       - yubikey-manager-qt
       - yubikey-manager
       - ykclient
-      - yubioath-desktop
       - keepassxc
       - borgbackup
       - distrobox

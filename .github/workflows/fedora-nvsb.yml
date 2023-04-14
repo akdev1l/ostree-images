@@ -3,8 +3,8 @@ name: build silverblue ostree container images
 on:
   schedule:
     - cron: '45 5 * * *'
-  push:
-    branches: [ "master" ]
+      #push:
+    #branches: [ "master" ]
 
 env:
   REGISTRY_USER: ${{ github.actor }}
