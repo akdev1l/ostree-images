@@ -34,8 +34,8 @@ jobs:
         major_version:
           - 38
         source_image:
-          - quay.io/fedora-ostree-desktops/silverblue
-          - quay.io/fedora-ostree-desktops/kinoite
+          - ghcr.io/ublue-os/silverblue-nvidia
+          - ghcr.io/ublue-os/kinoite-nvidia
     steps: 
       # Checkout push-to-registry action GitHub repository
       - name: git checkout
