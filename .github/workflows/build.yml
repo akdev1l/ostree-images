@@ -74,7 +74,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./Containerfile
+            ./images/${{ matrix.image_name }}/Containerfile
           context: images/${{ matrix.image_name }}
           image: ${{ matrix.image_name }}
           tags: |
