@@ -59,6 +59,15 @@ jobs:
             org.opencontainers.image.description=A base ${{ matrix.image_name }} setup for development
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/akdev1l/ostree-images/master/README.md
 
+      - name: generate tags
+        id: generate-tags
+        shell: bash
+        run: |
+          SHA_SHORT="$(git rev-parse --short HEAD)"
+          COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}")
+          DATE_TAG="$(date "+%Y%m%d")"
+          echo "alias_tags=latest ${{ matrix.major_version }} ${SHA_SHORT} ${COMMIT_TAG} ${DATE_TAG}" >> $GITHUB_OUTPUT
+
       # Build image using Buildah action
       - name: Build Image
         id: build_image
