@@ -129,9 +129,7 @@ jobs:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_KEY }}
         run: |
           umask 077
-          cat > cosign.key <<EOF
-          ${{env.COSIGN_PRIVATE_KEY}}
-          EOF
+          echo "${{ env.COSIGN_PRIVATE_KEY }}" > cosign.key
           wc -c cosign.key
           cosign sign -y --key cosign.key ${{ steps.registry_case.outputs.lowercase }}/${{ env.IMAGE_NAME }}@${TAGS}
 
