@@ -1,0 +1,47 @@
+name: Compose OSTree Images
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron:  '30 0,6,12,18 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-ostree:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - bootc
+    container:
+      # Yes, we're using this as a *builder* image.
+      image: quay.io/fedora/fedora-coreos:stable
+      options: "--user root --privileged -v /var/tmp:/var/tmp -v /tmp:/tmp"
+    steps:
+      - uses: actions/checkout@v3
+        # https://github.com/actions/checkout/issues/760
+      - name: Mark git checkout as safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install deps
+        run: rpm-ostree install distribution-gpg-keys
+
+      - name: Build ostree container
+        if: github.event_name != 'pull_request'
+        env:
+          IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
+        run: |
+          podman login --username ${{ github.actor }} --password ${{ github.token }} ${{ env.IMAGE_REGISTRY }}
+          rpm-ostree compose image \
+            --format=registry \
+            --initialize \
+            images/${{ matrix.image }}/treefile.yaml \
+            ${{ env.IMAGE_REGISTRY }}/${{ matrix.image }}-oscore
