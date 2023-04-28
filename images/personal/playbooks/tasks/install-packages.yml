@@ -30,6 +30,8 @@
       - borgbackup
       - distrobox
       - python3-lxml
+      - swtpm
+      - wl-clipboard
 
 - name: truncate fedora-flathub filter
   copy:
