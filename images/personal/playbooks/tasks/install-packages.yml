@@ -36,7 +36,7 @@
       - swtpm
       - wl-clipboard
       - gvfs-nfs
-      - alacritty
+      - konsole5
       - fzf
       - python3-pip
       - source-highlight
