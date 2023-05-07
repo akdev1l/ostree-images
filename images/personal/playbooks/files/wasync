@@ -8,16 +8,11 @@ set -x
 
 main() {
 
-    rclone sync "$HOME" wasabi:xyz.akdev.private/home \
-        --exclude '/.local/share/containers/**' \
-        --exclude '/.local/share/flatpak/**' \
-        --exclude '/.cache/**' \
-        --exclude '/.var/app/**' \
-        --exclude '/.snapshots/**' \
-        --exclude '/.ssh/**' \
+    rclone sync "$HOME" wasabi-home: \
+        --exclude '/.*/**' \
+        --exclude '/**.iso' \
         --drive-chunk-size 128M \
         -P
-
 }
 
 main "$@"

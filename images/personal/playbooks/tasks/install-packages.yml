@@ -37,6 +37,9 @@
       - wl-clipboard
       - gvfs-nfs
       - alacritty
+      - fzf
+      - python3-pip
+      - source-highlight
 
 - name: truncate fedora-flathub filter
   copy:

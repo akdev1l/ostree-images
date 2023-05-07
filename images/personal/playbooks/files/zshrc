@@ -15,6 +15,7 @@ export ZSH="/etc/oh-my-zsh"
 export ZSH_THEME="gianu"
 export CASE_SENSITIVE="true"
 export DISABLE_MAGIC_FUNCTIONS="true"
+setopt HIST_IGNORE_SPACE
 
 source $ZSH/oh-my-zsh.sh
 
@@ -22,15 +23,15 @@ source $ZSH/oh-my-zsh.sh
 export MAKEOPTS="-j$(nproc)"
 export EDITOR=vim
 export VISUAL=vim
-export LESS="-r -S"
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-alias ls='ls --color=tty --group-directories-first'
 
-# Containerized utilities for convenience
-aws() {
-    podman run --rm -it \
-        --security-opt label=disable \
-        -v $HOME:$HOME \
-        -v $HOME/.aws:/root/.aws \
-        amazon/aws-cli:latest "$@"
-}
+# Here we make things pretty
+# Many taken from https://wiki.archlinux.org/title/Color_output_in_console
+export LS_COLORS="$(vivid generate molokai)"
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export LESSOPEN='| /usr/bin/source-highlight-esc.sh %s'
+export LESS='-R --use-color -Dd+r$Du+b$'
+
+alias ls='ls --color=tty --group-directories-first'
+alias diff='diff -u --color=auto'
+alias ip='ip -color=auto'
