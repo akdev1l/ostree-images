@@ -5,7 +5,6 @@
     name:
       - firefox
       - firefox-langpacks
-      - toolbox
 
 - name: install packages with rpm-ostree
   community.general.rpm_ostree_pkg:
@@ -22,7 +21,7 @@
       - ripgrep
       - fira-code-fonts
       - rclone
-      - fedora-flathub-remote
+      - pam_yubico
       - yubikey-manager-qt
       - yubikey-manager
       - ykclient
@@ -32,6 +31,7 @@
       - python3-lxml
       - swtpm
       - wl-clipboard
+      - gvfs-nfs
 
 - name: truncate fedora-flathub filter
   copy:
