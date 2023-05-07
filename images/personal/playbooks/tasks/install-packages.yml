@@ -24,7 +24,11 @@
       - pam_yubico
       - yubikey-manager-qt
       - yubikey-manager
+      - yubikey-personalization-gui
       - ykclient
+      - ykpers
+      - pam-u2f
+      - pamu2fcfg
       - keepassxc
       - borgbackup
       - distrobox
@@ -32,6 +36,7 @@
       - swtpm
       - wl-clipboard
       - gvfs-nfs
+      - alacritty
 
 - name: truncate fedora-flathub filter
   copy:
