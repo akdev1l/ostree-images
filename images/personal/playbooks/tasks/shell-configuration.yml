@@ -33,7 +33,7 @@
   loop:
     - repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
       name: zsh-syntax-highlighting
-    - repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    - repo: https://github.com/zsh-users/zsh-autosuggestions.git
       name: zsh-autosuggestions
 
 - name: drop custom shell environment
