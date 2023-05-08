@@ -40,6 +40,12 @@
       - fzf
       - python3-pip
       - source-highlight
+      - aria2
+      - aspell
+      - nodejs
+      - iotop
+      - most
+      - bat
 
 - name: truncate fedora-flathub filter
   copy:

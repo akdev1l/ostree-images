@@ -7,12 +7,28 @@
 autoload -U compinit
 compinit
 
+plugins+=(
+    colored-man-pages
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+)
 #allow tab completion in the middle of a word
 setopt COMPLETE_IN_WORD
 
+# History Configuration
+# Add timestamps
+setopt EXTENDED_HISTORY
+# Skip duplicates on reverse search
+setopt HIST_FIND_NO_DUPS
+# Share history across zsh instances
+setopt SHARE_HISTORY
+# Set history to a large size
+export HISTFILESIZE=1000000000
+export HISTSIZE=1000000000
+
 # Path to your oh-my-zsh installation.
 export ZSH="/etc/oh-my-zsh"
-export ZSH_THEME="gianu"
+export ZSH_THEME="agnoster"
 export CASE_SENSITIVE="true"
 export DISABLE_MAGIC_FUNCTIONS="true"
 setopt HIST_IGNORE_SPACE
@@ -24,6 +40,9 @@ export MAKEOPTS="-j$(nproc)"
 export EDITOR=vim
 export VISUAL=vim
 export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+export PATH="$HOME/.local/bin:$PATH"
+export FZF_DEFAULT_COMMAND='rg --files -l'
+alias fzvim='fzf --bind "enter:become(vim {})"'
 
 # Here we make things pretty
 # Many taken from https://wiki.archlinux.org/title/Color_output_in_console
