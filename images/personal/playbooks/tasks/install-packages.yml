@@ -46,6 +46,8 @@
       - iotop
       - most
       - bat
+      - fd-find
+      - java-latest-openjdk
 
 - name: truncate fedora-flathub filter
   copy:
