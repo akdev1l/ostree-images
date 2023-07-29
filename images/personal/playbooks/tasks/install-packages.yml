@@ -48,6 +48,10 @@
       - bat
       - fd-find
       - java-latest-openjdk
+      - cmake
+      - moby-engine
+      - fedpkg
+      - policycoreutils-newrole
 
 - name: truncate fedora-flathub filter
   copy:
